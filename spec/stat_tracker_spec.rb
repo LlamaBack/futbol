@@ -68,6 +68,8 @@ RSpec.describe StatTracker do
   end
 
   it 'returns the highest scoring home team' do
-    expect(stat_tracker.highest_scoring_home_team).to eq('Houston Dynamo')
-  end 
+    expect(stat_tracker.highest_scoring_home_team).to eq('FC Dallas')
+  end
+
+  
 end
