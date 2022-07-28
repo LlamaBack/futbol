@@ -65,8 +65,8 @@ class StatTracker
         home_wins += 1
       end
     end
+    (home_wins / total_games).round(2)
 
-    ((home_wins / total_games) * 100).round(2)
   end
 
   def percentage_visitor_wins
@@ -82,7 +82,7 @@ class StatTracker
       end
     end
 
-    ((visitor_wins / total_games) * 100).round(2)
+    (visitor_wins / total_games).round(2)
   end
 
   def percentage_ties
@@ -98,7 +98,7 @@ class StatTracker
       end
     end
 
-    ((ties / total_games) * 100).round(2)
+    (ties / total_games).round(2)
   end
 
   def count_of_games_by_season
@@ -157,6 +157,19 @@ class StatTracker
     end
     team_count
   end
+
+  def total_games
+    total_games = 0
+    contents = CSV.open(@game_path, headers: true, header_converters: :symbol)
+    contents.each do |row|
+      games = row[:game_id].to_i
+      if games != 0
+      total_games += 1
+      end
+    end
+    total_games
+  end
+#created a helper method for total games to calculate averages better.  It needs to be refactored
 
   def best_offense
     game_teams_csv = CSV.open(@game_teams_path, headers: true, header_converters: :symbol)
@@ -244,4 +257,5 @@ class StatTracker
     home_team_row[:teamname]
   end
 
+##*Season Stats
 end
