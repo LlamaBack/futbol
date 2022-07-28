@@ -1,19 +1,6 @@
 require 'csv'
-<<<<<<< HEAD
 
-class StatTracker
-
-  def self.from_csv(locations)
-    locations.each do |name, path|
-      puts "#{name}: #{path}"
-      CSV.read(path, headers: true).each do |row|
-        pp row.to_h
-      end
-      puts "\n"
-    end
-  end
-=======
-require 'games'
+# require_relative 'games'
 
 class StatTracker
   attr_reader :locations, :data
@@ -158,5 +145,61 @@ class StatTracker
   end
 
   #league stats
->>>>>>> 9d9122a1f0bf8bc183e8e2780383906c2878e78c
+
+  def count_of_teams
+    team_count = 0
+    contents = CSV.open(@team_path, headers: true, header_converters: :symbol)
+    contents.each do |row|
+      teams = row[:team_id].to_i
+      if teams != 0
+        team_count += 1
+      end
+    end
+    team_count
+  end
+
+  def best_offense
+    game_teams_csv = CSV.open(@game_teams_path, headers: true, header_converters: :symbol)
+    goals_by_team_id = Hash.new(0)
+    game_teams_csv.each do |row|
+      goals_by_team_id[row[:team_id].to_i] += row[:goals].to_i
+    end
+    best_offense_team_id = goals_by_team_id.max_by { |team_id, goals| goals }[0]
+    teams_csv = CSV.open(@team_path, headers: true, header_converters: :symbol)
+    team_row = teams_csv.find do |row|
+      row[:team_id].to_i == best_offense_team_id
+    end
+    team_row[:teamname]
+  end
+
+
+  def worst_offense
+    game_teams_csv = CSV.open(@game_teams_path, headers: true, header_converters: :symbol)
+    goals_by_team_id = Hash.new(0)
+    game_teams_csv.each do |row|
+      goals_by_team_id[row[:team_id].to_i] += row[:goals].to_i
+    end
+    #in the method below we are checking the lowest scoring team by accessing the key at the end "[0]"
+    best_offense_team_id = goals_by_team_id.min_by { |team_id, goals| goals }[0]
+    teams_csv = CSV.open(@team_path, headers: true, header_converters: :symbol)
+    team_row = teams_csv.find do |row|
+      row[:team_id].to_i == best_offense_team_id
+    end
+    team_row[:teamname]
+  end
+
+  def highest_scoring_visitor
+    games_csv = CSV.open(@game_path, headers: true, header_converters: :symbol)
+    away_goals_by_team_id = Hash.new(0)
+    games_csv.each do |row|
+      away_goals_by_team_id[row[:away_team_id].to_i] += row[:away_goals].to_i
+    end
+    best_away_team_id = away_goals_by_team_id.max_by { |away_team_id, goals| goals }[0]
+    teams_csv = CSV.open(@team_path, headers: true, header_converters: :symbol)
+    visitor_team_row = teams_csv.find do |row|
+      row[:team_id].to_i == best_away_team_id
+    end
+    visitor_team_row[:teamname]
+  end
+
 end

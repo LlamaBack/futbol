@@ -3,7 +3,7 @@ require './lib/stat_tracker'
 RSpec.describe StatTracker do
   let(:locations) do {
     games: './data/dummy_games.csv',
-    teams: './data/dummy_teams.csv',
+    teams: './data/teams.csv',
     game_teams: './data/dummy_game_teams.csv'
   } end
 
@@ -50,4 +50,24 @@ RSpec.describe StatTracker do
   end
 
   #league stats
+
+  it 'returns a count of total teams' do
+    expect(stat_tracker.count_of_teams).to eq(32)
+  end
+
+  it 'returns team with the best offense' do
+    expect(stat_tracker.best_offense).to eq('FC Dallas')
+  end
+
+  it 'returns team with the worst offense' do
+    expect(stat_tracker.worst_offense).to eq('Houston Dynamo')
+  end
+
+  it 'returns the highest scoring visiting team' do
+    expect(stat_tracker.highest_scoring_visitor).to eq('FC Dallas')
+  end
+
+  it 'returns the highest scoring home team' do
+    expect(stat_tracker.highest_scoring_home_team).to eq('Houston Dynamo')
+  end 
 end
