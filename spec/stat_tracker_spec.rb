@@ -74,4 +74,8 @@ RSpec.describe StatTracker do
   it 'returns the lowest scoring visiting team' do
     expect(stat_tracker.lowest_scoring_visitor).to eq('Houston Dynamo')
   end
+
+  it 'returns the lowest scoring home team' do
+    expect(stat_tracker.lowest_scoring_home_team).to eq('Sporting Kansas City')
+  end
 end
