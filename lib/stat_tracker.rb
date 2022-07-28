@@ -216,4 +216,17 @@ class StatTracker
     home_team_row[:teamname]
   end
 
+  def lowest_scoring_visitor
+    games_csv = CSV.open(@game_path, headers: true, header_converters: :symbol)
+    away_goals_by_team_id = Hash.new(0)
+    games_csv.each do |row|
+      away_goals_by_team_id[row[:away_team_id].to_i] += row[:away_goals].to_i
+    end
+    best_away_team_id = away_goals_by_team_id.min_by { |away_team_id, goals| goals }[0]
+    teams_csv = CSV.open(@team_path, headers: true, header_converters: :symbol)
+    visitor_team_row = teams_csv.find do |row|
+      row[:team_id].to_i == best_away_team_id
+    end
+    visitor_team_row[:teamname]
+  end
 end
