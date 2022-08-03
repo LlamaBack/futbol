@@ -8,10 +8,7 @@ require_relative './season_processor'
 require_relative './team_processor'
 
 class StatTracker
-  include GameProcessor
-  include LeagueProcessor
-  include SeasonProcessor
-  include TeamProcessor
+  include GameProcessor, LeagueProcessor, SeasonProcessor, TeamProcessor
   attr_reader :locations, :data
   def initialize(game_path, team_path, game_teams_path)
     @game_path = game_path
@@ -21,31 +18,21 @@ class StatTracker
 
   def games
     games_csv = CSV.open(@game_path, headers: true, header_converters: :symbol)
-    @games ||= games_csv.map do |row|
-      Game.new(row)
-    end
+    @games ||= games_csv.map { |row| Game.new(row) }
   end
 
   def teams
     teams_csv = CSV.open(@team_path, headers: true, header_converters: :symbol)
-    @teams ||= teams_csv.map do |row|
-      Team.new(row)
-    end
+    @teams ||= teams_csv.map { |row| Team.new(row) }
   end
 
   def game_teams
     game_teams_csv = CSV.open(@game_teams_path, headers: true, header_converters: :symbol)
-    @game_teams ||= game_teams_csv.map do |row|
-      GameTeam.new(row)
-    end
+    @game_teams ||= game_teams_csv.map { |row| GameTeam.new(row) }
   end
 
   def self.from_csv(locations)
-    StatTracker.new(
-      locations[:games],
-      locations[:teams],
-      locations[:game_teams]
-    )
+    StatTracker.new(locations[:games], locations[:teams], locations[:game_teams])
   end
 
   def highest_total_score
@@ -185,14 +172,12 @@ class StatTracker
   end
 
   def favorite_opponent(team_id)
-    opp_stats = opponent_stats(team_id, games)
-    team_id = fav_opponent(opp_stats)
+    team_id = fav_opponent(opponent_stats(team_id, games))
     team_info(team_id)['team_name']
   end
 
   def rival(team_id)
-    opp_stats = opponent_stats(team_id, games)
-    team_id = rival_opponent(opp_stats)
+    team_id = rival_opponent(opponent_stats(team_id, games))
     team_info(team_id)['team_name']
   end
 end
