@@ -2,24 +2,21 @@ require 'csv'
 require_relative 'game'
 require_relative 'team'
 require_relative 'game_team'
-
 require_relative './game_processor'
 require_relative './league_processor'
 require_relative './season_processor'
+require_relative './team_processor'
 
 class StatTracker
   include GameProcessor
   include LeagueProcessor
   include SeasonProcessor
-
+  include TeamProcessor
   attr_reader :locations, :data
-
   def initialize(game_path, team_path, game_teams_path)
-
     @game_path = game_path
     @team_path = team_path
     @game_teams_path = game_teams_path
-
   end
 
   def games
@@ -53,89 +50,38 @@ class StatTracker
 
   def highest_total_score
     total_score('highest', games)
-    # score_sum = 0
-    # games.each do |game|
-    #   if score_sum < game.total_goals_game
-    #     score_sum = game.total_goals_game
-    #   end
-    # end
-    # score_sum
   end
 
   def lowest_total_score
     total_score('lowest', games)
-    # score_sum = Float::INFINITY
-    # games.each do |game|
-    #     if score_sum > game.total_goals_game
-    #     score_sum = game.total_goals_game
-    #   end
-    # end
-    # score_sum
   end
 
   def percentage_home_wins
-    win_percentage('home', games)
-    # total_games = 0.0
-    # home_wins = 0.0
-    # games.each do |game|
-    #   total_games += 1
-    #   if game.home_goals.to_i > game.away_goals.to_i
-    #     home_wins += 1
-    #   end
-    # end
-    # (home_wins / total_games).round(2)
+    (wins_ties('home', games) / games.count).round(2)
   end
 
   def percentage_visitor_wins
-    win_percentage('visitor', games)
-    # total_games = 0.0
-    # visitor_wins = 0.0
-    # games.each do |game|
-    #   total_games += 1
-    #   if game.home_goals.to_i < game.away_goals.to_i
-    #     visitor_wins += 1
-    #   end
-    # end
-    # (visitor_wins / total_games).round(2)
+    (wins_ties('visitor', games) / games.count).round(2)
   end
 
   def percentage_ties
-    win_percentage('ties', games)
-    # total_games = 0.0
-    # ties = 0.0
-    # games.each do |game|
-    #   total_games += 1
-    #   if game.home_goals.to_i == game.away_goals.to_i
-    #     ties += 1
-    #   end
-    # end
-    # (ties / total_games).round(2)
+    (wins_ties('ties', games) / games.count).round(2)
   end
 
   def count_of_games_by_season
-    season_games = Hash.new(0)
-    games.each do |game|
-      season_games[game.season] += 1
-    end
-    season_games
+    games_by_season(games)
   end
 
   def average_goals_per_game
-    total_goals = 0.0
-    games.each do |game|
-      total_goals += game.total_goals_game
-    end
-    (total_goals / games.count).round(2)
+    (total_goals(games) / games.count).round(2)
   end
 
   def average_goals_by_season
-    total_goals = total_goals_by_season(games)
-    count = count_of_games_by_season
     avg_season_goals = Hash.new(0.0)
-    total_goals.each do |season, goal|
-      avg_season_goals[season] = (goal / count[season]).round(2)
+    total_goals_by_season(games).each do |season, goal|
+      avg_season_goals[season] = (goal / count_of_games_by_season[season]).round(2)
     end
-    avg_season_goals
+      avg_season_goals
   end
 
   def count_of_teams
@@ -170,17 +116,6 @@ class StatTracker
   def lowest_scoring_home_team
     worst_home_id = home_scoring_outcome("lowest_scoring", games)
     team_info(worst_home_id.to_s)['team_name']
-  end
-
-  def total_games_by_team(team_id)
-    total_games = 0
-    contents = CSV.open(@game_path, headers: true, header_converters: :symbol)
-    contents.each do |row|
-      if row[:away_team_id] == team_id || row[:home_team_id] == team_id
-        total_games += 1
-      end
-    end
-    total_games
   end
 
   def winningest_coach(season_id)
@@ -228,29 +163,12 @@ class StatTracker
   def best_season(team_id)
     team_seasons = season_stats(team_id, game_teams)
     winningest_season = bestest_season(team_seasons)
-
-    # highest_win_percentage = 0.0
-    # winningest_season = ''
-    # team_seasons.each do |season, wins_games|
-    #   if highest_win_percentage < wins_games[1] / wins_games[0]
-    #     highest_win_percentage = wins_games[1] / wins_games[0]
-    #     winningest_season = season
-    #   end
-    # end
     return "#{winningest_season}#{winningest_season.next}"
   end
 
   def worst_season(team_id)
     team_seasons = season_stats(team_id, game_teams)
     losingest_season = worstest_season(team_seasons)
-    # lowest_win_percentage = 1.0
-    # losingest_season = ''
-    # team_seasons.each do |season, wins_games|
-    #   if lowest_win_percentage > wins_games[1] / wins_games[0]
-    #     lowest_win_percentage = wins_games[1] / wins_games[0]
-    #     losingest_season = season
-    #   end
-    # end
     return "#{losingest_season}#{losingest_season.next}"
   end
 
@@ -268,17 +186,13 @@ class StatTracker
 
   def favorite_opponent(team_id)
     opp_stats = opponent_stats(team_id, games)
-
     team_id = fav_opponent(opp_stats)
-
     team_info(team_id)['team_name']
   end
 
   def rival(team_id)
     opp_stats = opponent_stats(team_id, games)
-
     team_id = rival_opponent(opp_stats)
-
     team_info(team_id)['team_name']
   end
 end

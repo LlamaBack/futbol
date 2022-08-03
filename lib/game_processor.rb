@@ -19,7 +19,7 @@ module GameProcessor
     return score_sum
   end
 
-  def win_percentage(value, games)
+  def wins_ties(value, games)
     if value == 'home'
       home_wins = 0.0
       games.each do |game|
@@ -27,7 +27,7 @@ module GameProcessor
           home_wins += 1
         end
       end
-      (home_wins / games.count).round(2)
+      home_wins
 
     elsif value == 'visitor'
       visitor_wins = 0.0
@@ -36,7 +36,7 @@ module GameProcessor
           visitor_wins += 1
         end
       end
-      (visitor_wins / games.count).round(2)
+      visitor_wins
 
     else
       ties = 0.0
@@ -45,8 +45,24 @@ module GameProcessor
           ties += 1
         end
       end
-      (ties / games.count).round(2)
+      ties
     end
+  end
+
+  def games_by_season(games)
+    season_games = Hash.new(0)
+    games.each do |game|
+      season_games[game.season] += 1
+    end
+    season_games
+  end
+
+  def total_goals(games)
+    total_goals = 0.0
+    games.each do |game|
+      total_goals += game.total_goals_game
+    end
+    total_goals
   end
 
   def total_goals_by_season(games)
@@ -56,8 +72,4 @@ module GameProcessor
     end
     total_season_goals
   end
-
-
-
-
 end
