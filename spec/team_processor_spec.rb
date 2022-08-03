@@ -26,6 +26,7 @@ RSpec.describe TeamProcessor do
     home_goals: "5" }}
 
   let(:games) {[Game.new(row1), Game.new(row2), Game.new(row3)]}
+
   let(:game_team_row1) { {game_id:"2012030221",
               team_id:"3",
               goals: "1",
@@ -51,35 +52,27 @@ RSpec.describe TeamProcessor do
                       } }
   let(:game_teams) {[GameTeam.new(game_team_row1), GameTeam.new(game_team_row2)]}
 
-  it 'returns opponent' do
-    expect(dummy_class.opponent("1", favorite, teams)).to eq({"John Tortorella"=>[1.0, 0.0], "Claude Julien"=>[1.0, 1.0]})
+  it 'returns season_stats' do
+    expect(dummy_class.season_stats("3", game_teams)).to eq({"2012"=>[1.0, 0.0]})
   end
 
-  it 'returns best_coach' do
-    coach_stats = dummy_class.coach_stats("2012", game_teams)
-    expect(dummy_class.best_coach(coach_stats)).to eq("Claude Julien")
+  it 'returns most and lowest goals_scored' do
+    expect(dummy_class.goals_scored("6", "most", game_teams)).to eq(3)
+    expect(dummy_class.goals_scored("3", "lowest", game_teams)).to eq(1)
   end
 
-  it 'returns worstest_coach' do
-    coach_stats = dummy_class.coach_stats("2012", game_teams)
-    expect(dummy_class.worstest_coach(coach_stats)).to eq("John Tortorella")
+  it 'returns opponent_stats' do
+    expect(dummy_class.opponent_stats("6", games)).to eq({"3"=>[3.0, 1.0, 0.0]})
   end
 
-  it 'returns goal_stats' do
-    expect(dummy_class.goal_stats("2012", game_teams)).to eq({"3"=>[8.0, 1.0], "6"=>[12.0, 3.0]})
+  it 'returns fav_opponent' do
+    stats = dummy_class.opponent_stats("6", games)
+    expect(dummy_class.fav_opponent(stats)).to eq("3")
   end
 
-  it 'returns mostest_accurate_team' do
-    goal_stats = dummy_class.goal_stats("2012", game_teams)
-    expect(dummy_class.mostest_accurate_team(goal_stats)).to eq("6")
+  it 'returns rival_opponent' do
+    stats = dummy_class.opponent_stats("6", games)
+    expect(dummy_class.rival_opponent(stats)).to eq("3")
   end
 
-  it 'returns leastest_accurate_team' do
-    goal_stats = dummy_class.goal_stats("2012", game_teams)
-    expect(dummy_class.leastest_accurate_team(goal_stats)).to eq("3")
-  end
-
-  it 'returns tackle_stats' do
-    expect(dummy_class.tackle_stats("2012", game_teams)).to eq({"3"=>44, "6"=>51})
-  end
 end
