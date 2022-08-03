@@ -1,38 +1,15 @@
-require 'csv'
-require_relative 'game'
-require_relative 'team'
-require_relative 'game_team'
-require_relative './game_processor'
-require_relative './league_processor'
-require_relative './season_processor'
-require_relative './team_processor'
+require_relative 'data_loader'
 
-class StatTracker
+class StatTracker < DataLoader
   include GameProcessor, LeagueProcessor, SeasonProcessor, TeamProcessor
   attr_reader :locations, :data
-  def initialize(game_path, team_path, game_teams_path)
-    @game_path = game_path
-    @team_path = team_path
-    @game_teams_path = game_teams_path
-  end
 
-  def games
-    games_csv = CSV.open(@game_path, headers: true, header_converters: :symbol)
-    @games ||= games_csv.map { |row| Game.new(row) }
-  end
-
-  def teams
-    teams_csv = CSV.open(@team_path, headers: true, header_converters: :symbol)
-    @teams ||= teams_csv.map { |row| Team.new(row) }
-  end
-
-  def game_teams
-    game_teams_csv = CSV.open(@game_teams_path, headers: true, header_converters: :symbol)
-    @game_teams ||= game_teams_csv.map { |row| GameTeam.new(row) }
+  def initialize(locations)
+    super(locations)
   end
 
   def self.from_csv(locations)
-    StatTracker.new(locations[:games], locations[:teams], locations[:game_teams])
+    StatTracker.new(locations)
   end
 
   def highest_total_score
@@ -64,11 +41,7 @@ class StatTracker
   end
 
   def average_goals_by_season
-    avg_season_goals = Hash.new(0.0)
-    total_goals_by_season(games).each do |season, goal|
-      avg_season_goals[season] = (goal / count_of_games_by_season[season]).round(2)
-    end
-      avg_season_goals
+    average_season_goals(games)
   end
 
   def count_of_teams
@@ -134,17 +107,7 @@ class StatTracker
   end
 
   def team_info(team_id)
-    team_hash = Hash.new()
-    teams.each do |team|
-      if team.team_id == team_id
-        team_hash['team_name'] = team.team_name
-        team_hash['team_id'] = team.team_id
-        team_hash['franchise_id'] = team.franchise_id
-        team_hash['abbreviation'] = team.abbv
-        team_hash['link'] = team.link
-        return team_hash
-      end
-    end
+    team_information(team_id, teams)
   end
 
   def best_season(team_id)

@@ -10,21 +10,18 @@ RSpec.describe TeamProcessor do
     home_team_id:  "6",
     away_goals: "2",
     home_goals: "1" }}
-
   let(:row2) { {game_id: "2012030222",
     season: "20122013",
     away_team_id: "3",
     home_team_id:  "6",
     away_goals: "2",
     home_goals: "3" }}
-
   let(:row3) { {game_id: "2011030222",
     season: "20112012",
     away_team_id: "3",
     home_team_id:  "6",
     away_goals: "6",
     home_goals: "5" }}
-
   let(:games) {[Game.new(row1), Game.new(row2), Game.new(row3)]}
 
   let(:game_team_row1) { {game_id:"2012030221",
@@ -43,14 +40,17 @@ RSpec.describe TeamProcessor do
               shots: "12",
               tackles: "51"
               } }
-  let(:team_row) { {
-                # team_id: "1",
-                # franchiseid: "23",
-                # teamname: "Atlanta United",
-                # abbreviation: "ATL",
-                # link: "/api/v1/teams/1"
-                      } }
   let(:game_teams) {[GameTeam.new(game_team_row1), GameTeam.new(game_team_row2)]}
+
+  let(:team_row) { {
+              team_id: "1",
+              franchiseid: "23",
+              teamname: "Atlanta United",
+              abbreviation: "ATL",
+              link: "/api/v1/teams/1"
+              } }
+  let(:teams) {[Team.new(team_row)]}
+
 
   it 'returns season_stats' do
     expect(dummy_class.season_stats("3", game_teams)).to eq({"2012"=>[1.0, 0.0]})
@@ -92,6 +92,16 @@ RSpec.describe TeamProcessor do
   it 'returns rival_opponent' do
     stats = dummy_class.opponent_stats("6", games)
     expect(dummy_class.rival_opponent(stats)).to eq("3")
+  end
+
+  it 'returns team_information' do
+    expect(dummy_class.team_information("1", teams)).to eq({
+      'team_id' => '1',
+      'franchise_id' => '23',
+      'team_name' => "Atlanta United",
+      'abbreviation' => 'ATL',
+      'link' => '/api/v1/teams/1'
+    })
   end
 
 end
