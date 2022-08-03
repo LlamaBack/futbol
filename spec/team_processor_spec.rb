@@ -56,6 +56,25 @@ RSpec.describe TeamProcessor do
     expect(dummy_class.season_stats("3", game_teams)).to eq({"2012"=>[1.0, 0.0]})
   end
 
+  it 'returns bestest season' do
+    stats = dummy_class.season_stats("6", game_teams)
+    expect(dummy_class.bestest_season(stats)).to eq("2012")
+  end
+
+  it 'returns worstest season' do
+    stats = dummy_class.season_stats("3", game_teams)
+    expect(dummy_class.worstest_season(stats)).to eq("2012")
+  end
+
+  it 'can return games_played' do
+    expect(dummy_class.games_played("3", game_teams)).to eq(1.0)
+  end
+
+  it 'can return games_won' do
+    expect(dummy_class.games_won("3", game_teams)).to eq(0.0)
+    expect(dummy_class.games_won("6", game_teams)).to eq(1.0)
+  end
+
   it 'returns most and lowest goals_scored' do
     expect(dummy_class.goals_scored("6", "most", game_teams)).to eq(3)
     expect(dummy_class.goals_scored("3", "lowest", game_teams)).to eq(1)

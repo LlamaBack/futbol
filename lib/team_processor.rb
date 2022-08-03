@@ -25,6 +25,39 @@ module TeamProcessor
     return winningest_season
   end
 
+  def worstest_season(team_seasons)
+    lowest_win_percentage = 1.0
+    losingest_season = ''
+    team_seasons.each do |season, wins_games|
+      if lowest_win_percentage > wins_games[1] / wins_games[0]
+        lowest_win_percentage = wins_games[1] / wins_games[0]
+        losingest_season = season
+      end
+    end
+    return losingest_season
+  end
+
+  def games_played(team_id, game_teams)
+    games_played = 0.0
+    game_teams.each do |game_team|
+      if game_team.team_id == team_id
+        games_played += 1
+      end
+    end
+    games_played
+  end
+
+  def games_won(team_id, game_teams)
+    games_won = 0.0
+    game_teams.each do |game_team|
+      if game_team.team_id == team_id
+        if game_team.result == "WIN"
+          games_won += 1
+        end
+      end
+    end
+    games_won
+  end
 
   def goals_scored(team_id, value, game_teams)
     if value == "most"

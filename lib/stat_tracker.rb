@@ -421,38 +421,21 @@ class StatTracker
   end
 
   def worst_season(team_id)
-    team_seasons = Hash.new { |season_id, games_won| season_id[games_won] = [0.0, 0.0] }
-    game_teams.each do |game_team|
-      if game_team.team_id == team_id
-        team_seasons[game_team.game_id[0..3]][0] += 1
-        if game_team.result == 'WIN'
-          team_seasons[game_team.game_id[0..3]][1] += 1
-        end
-      end
-    end
-    lowest_win_percentage = 1.0
-    losingest_season = ''
-    team_seasons.each do |season, wins_games|
-      if lowest_win_percentage > wins_games[1] / wins_games[0]
-        lowest_win_percentage = wins_games[1] / wins_games[0]
-        losingest_season = season
-      end
-    end
+    team_seasons = season_stats(team_id, game_teams)
+    losingest_season = worstest_season(team_seasons)
+    # lowest_win_percentage = 1.0
+    # losingest_season = ''
+    # team_seasons.each do |season, wins_games|
+    #   if lowest_win_percentage > wins_games[1] / wins_games[0]
+    #     lowest_win_percentage = wins_games[1] / wins_games[0]
+    #     losingest_season = season
+    #   end
+    # end
     return "#{losingest_season}#{losingest_season.next}"
   end
 
   def average_win_percentage(team_id)
-    games_played = 0.0
-    games_won = 0.0
-    game_teams.each do |game_team|
-      if game_team.team_id == team_id
-        games_played += 1
-        if game_team.result == "WIN"
-          games_won += 1
-        end
-      end
-    end
-    (games_won / games_played).round(2)
+    (games_won(team_id, game_teams) / games_played(team_id, game_teams)).round(2)
   end
 
   def most_goals_scored(team_id)
