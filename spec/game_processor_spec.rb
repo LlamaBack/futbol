@@ -62,4 +62,9 @@ RSpec.describe GameProcessor do
     }
     expect(dummy_class.total_goals_by_season(games)).to eq(expected_hash)
   end
+
+  it 'returns avg goals by season' do
+    expected_hash = {"20122013"=>4.0, "20112012"=>6.5}
+    expect(dummy_class.average_season_goals(games)).to eq(expected_hash)
+  end
 end

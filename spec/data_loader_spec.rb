@@ -7,15 +7,19 @@ RSpec.describe DataLoader do
 
   let(:data_loader) {DataLoader.new(locations)}
 
-  it 'reads the games csv' do
+  it 'reads the games csv and returns an array' do
     expect(data_loader.games).to be_an_instance_of(Array)
+    expect(data_loader.games[0].game_id).to eq("2012030221")
   end
 
-  it 'reads the teams csv' do
+  it 'reads the teams csv and returns an array' do
     expect(data_loader.teams).to be_an_instance_of(Array)
+    expect(data_loader.teams[0].team_id).to eq("1")
   end
 
-  it 'reads the game_teams csv' do
+  it 'reads the game_teams csv and returns an array' do
     expect(data_loader.game_teams).to be_an_instance_of(Array)
+    # require "pry";binding.pry
+    expect(data_loader.game_teams[0].team_id).to eq("3")
   end
 end

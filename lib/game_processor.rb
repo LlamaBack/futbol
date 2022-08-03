@@ -76,7 +76,7 @@ module GameProcessor
   def average_season_goals(games)
     avg_season_goals = Hash.new(0.0)
     total_goals_by_season(games).each do |season, goal|
-      avg_season_goals[season] = (goal / count_of_games_by_season[season]).round(2)
+      avg_season_goals[season] = (goal / games_by_season(games)[season]).round(2)
     end
     avg_season_goals
   end
