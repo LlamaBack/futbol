@@ -19,7 +19,6 @@ RSpec.describe DataLoader do
 
   it 'reads the game_teams csv and returns an array' do
     expect(data_loader.game_teams).to be_an_instance_of(Array)
-    # require "pry";binding.pry
     expect(data_loader.game_teams[0].team_id).to eq("3")
   end
 end
