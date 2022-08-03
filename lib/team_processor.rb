@@ -9,7 +9,6 @@ module TeamProcessor
         end
       end
     end
-    # require "pry";binding.pry
     return team_seasons
   end
 
@@ -84,9 +83,9 @@ module TeamProcessor
   end
 
   def opponent_stats(team_id, games)
-    opponent_stats = Hash.new { |opponent_id, stats| opponent_id[stats] = [0.0, 0.0, 0.0] } #[games_played, games_won]
+    opponent_stats = Hash.new { |opponent_id, stats| opponent_id[stats] = [0.0, 0.0, 0.0] }
     games.each do |game|
-      if game.home_team_id == team_id #|| row[:home_team_id] == team_id
+      if game.home_team_id == team_id
         opponent_stats[game.away_team_id][0] += 1
         if game.home_goals > game.away_goals
           opponent_stats[game.away_team_id][1] += 1
@@ -100,7 +99,6 @@ module TeamProcessor
         end
       end
     end
-    # require "pry";binding.pry
     return opponent_stats
   end
 
@@ -111,7 +109,6 @@ module TeamProcessor
       if highest_win_percentage < stats[1] / stats[0]
         highest_win_percentage = stats[1] / stats[0]
         fav_opponent = opponent_id
-        stats[2] = stats[1] / stats[0] #not needed for this method. but might be useful for making team class?
       end
     end
     fav_opponent
@@ -124,10 +121,22 @@ module TeamProcessor
       if lowest_win_percentage > stats[1] / stats[0]
         lowest_win_percentage = stats[1] / stats[0]
         rival_opponent = opponent_id
-        stats[2] = stats[1] / stats[0] #not needed for this method. but might be useful for making team class?
       end
     end
     rival_opponent
   end
 
+  def team_information(team_id, teams)
+    team_hash = Hash.new()
+    teams.each do |team|
+      if team.team_id == team_id
+        team_hash['team_name'] = team.team_name
+        team_hash['team_id'] = team.team_id
+        team_hash['franchise_id'] = team.franchise_id
+        team_hash['abbreviation'] = team.abbv
+        team_hash['link'] = team.link
+        return team_hash
+      end
+    end
+  end
 end
